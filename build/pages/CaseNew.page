@@ -1,0 +1,85 @@
+<apex:page standardController="Case" extensions="CaseNewExtension" tabStyle="Case">
+    <style type="text/css">
+        .title { 
+            font-size: 1em;
+            padding-top: 3px;
+            margin: 0;
+            line-height: 1em;
+        }
+    </style>
+    <apex:sectionHeader title="Case" subtitle="Ny"/>
+    <apex:form >
+    <apex:pageblock >
+         <apex:pageBlockSection id="InfoId" columns="1" >
+
+            <apex:outputField value="{!case.OwnerId}"/>
+            <apex:inputField value="{!case.ContactId}">
+             <apex:actionSupport event="onchange" action="{!AccountPopulated}" rendered="true"/> 
+            </apex:inputField>
+            <apex:inputField value="{!case.AccountId}"/>            
+            <apex:inputField value="{!case.Typ_av_case__c}"/>
+            <apex:inputField value="{!case.Description}"/>
+            <apex:inputField value="{!case.Priority}"/>
+            <apex:inputField value="{!case.Origin}"/>
+         </apex:pageBlockSection>
+
+         <table class="detailList" cellspacing="0" cellpadding="0" border="0">
+            <tbody>
+            <tr>
+               <th class="labelCol vfLabelColTextWrap first" scope="row">
+                   <p class="title">Status</p>
+               </th>
+               <td class="data2Col first"> 
+                    <apex:selectList size="1" value="{!SelectedStatus}">
+                         <apex:selectOptions value="{!statusValues}"/> 
+                    </apex:selectList>
+              </td>
+            </tr>
+           <tr>
+               <th class="labelCol vfLabelColTextWrap " scope="row">
+                   <p class="title">Prisbok</p>
+               </th>
+               <td class="data2Col "> 
+                    <apex:selectList size="1" value="{!SelectedPricebook}">
+                        <apex:selectOptions value="{!pricebooks}"/>
+                        <apex:actionSupport event="onchange" action="{!upDatePriceBook}" /> 
+                    </apex:selectList>
+              </td>
+            </tr>
+            <tr> 
+                <th class="labelCol vfLabelColTextWrap " scope="row">
+                   <p class="title">Välj produkt</p>
+               </th>
+               <td class="data2Col "> 
+                    <apex:selectList size="1" value="{!SelectedProduct}">              
+                        <apex:selectOptions value="{!products}"/>
+                        <apex:actionSupport event="onchange" action="{!checkProductChoice}" />
+                    </apex:selectList>
+               </td>
+            </tr>
+            <tr> 
+                <th class="labelCol vfLabelColTextWrap " scope="row">
+                   <p class="title">Antal</p>
+               </th>
+               <td class="data2Col "> 
+                    <apex:inputField value="{!case.Antal__c}"/>
+               </td>
+            </tr>
+            <tr> 
+                <th class="labelCol vfLabelColTextWrap last" scope="row">
+                   <p class="title">Start datum</p>
+               </th>
+               <td class="data2Col last"> 
+                    <apex:inputField value="{!case.StartDate__c}"/>
+               </td>
+            </tr>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton action="{!saveAndAddProduct}" value="Spara och lägg till produkt" disabled="{!hasNotAddedProduct}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+             </apex:pageBlockButtons>
+             </tbody>
+           </table>       
+    </apex:pageblock>
+    </apex:form>
+</apex:page>
