@@ -91,23 +91,23 @@ module.exports = function(grunt) {
           apextrigger:    ['*'],
           apexpage:       ['*']
         }
-      },
+      }
 
       // specify several deploy targets
-      dev2: {
-        options: {
-          user:  'anders.nehlin@yahoo.se',
-          pass:  'ZSE€5rdx',
-          token: 'n74Zvkszuyn0XzuLTOn6K17JS',
-          serverurl: 'https://login.salesforce.com' // default => https://login.salesforce.com
-        },
-        pkg: {
-          staticresource: ['*'],
-          apexclass:      ['*'],
-          apextrigger:    ['*'],
-          apexpage:       ['*']
-        }
-      }
+      // dev2: {
+      //   options: {
+      //     user:  'anders.nehlin@yahoo.se',
+      //     pass:  'ZSE€5rdx',
+      //     token: 'n74Zvkszuyn0XzuLTOn6K17JS',
+      //     serverurl: 'https://login.salesforce.com' // default => https://login.salesforce.com
+      //   },
+      //   pkg: {
+      //     staticresource: ['*'],
+      //     apexclass:      ['*'],
+      //     apextrigger:    ['*'],
+      //     apexpage:       ['*']
+      //   }
+      // }
     },
 
     clean: {
