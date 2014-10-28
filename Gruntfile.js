@@ -74,7 +74,9 @@ module.exports = function(grunt) {
       // define global options for all deploys
       options: {
         root: 'build/',
-        version: '29.0'
+        version: '29.0',
+        runAllTests: true,
+        rollbackOnError: true
       },
       // create individual deploy targets. these can be
       // individual orgs or even the same org with different packages
@@ -90,24 +92,9 @@ module.exports = function(grunt) {
           apexclass:      ['*'],
           apextrigger:    ['*'],
           apexpage:       ['*']
-        }
-      }
-
-      // specify several deploy targets
-      // dev2: {
-      //   options: {
-      //     user:  'anders.nehlin@yahoo.se',
-      //     pass:  'ZSE€5rdx',
-      //     token: 'n74Zvkszuyn0XzuLTOn6K17JS',
-      //     serverurl: 'https://login.salesforce.com' // default => https://login.salesforce.com
-      //   },
-      //   pkg: {
-      //     staticresource: ['*'],
-      //     apexclass:      ['*'],
-      //     apextrigger:    ['*'],
-      //     apexpage:       ['*']
-      //   }
-      // }
+        },
+        // tests: ['Test_CaseNewExtension', 'Test_CaseProductController', 'Test_CaseProductTriggers']
+      },
     },
 
     clean: {
@@ -134,6 +121,38 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-zipstream');
   grunt.loadNpmTasks('grunt-ant-sfdc');
   grunt.loadNpmTasks('grunt-gh-pages');
+
+  grunt.registerTask('schedule_job', 'Scheduling job for deploy', function() {
+
+    grunt.log.writeln("The scheduled job will be executed at ?? every day until the YYYY-MM-DD.");
+    var done = this.async();
+    var moment = require('moment');
+    console.log('Started: ' + moment().format('YYYY-MM-DD HH:mm:ss'));
+
+    var exec = require('child_process').exec
+    var path = require('path')
+    var running = false
+
+    var run = function(what) {
+      if (running === true) return
+      running = true
+      console.log('Running deploy...');
+      // by default, just run grunt
+      what = what || 'grunt'
+      exec(what, function(err, stdout, stderr) {
+        if (err || stderr) { /* log the error somewhere */ }
+        /* log the stdout if needed*/
+        console.log(stdout)
+        running = false
+      })
+    }
+
+    setInterval(function() {
+      run('grunt deploy')
+    }, 60 * 1000) // once a day
+
+  });
+
 
   // custom task to write the -meta.xml file for the metadata deployment
   grunt.registerTask('write-meta', 'Write the required salesforce metadata', function() {
