@@ -122,34 +122,82 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ant-sfdc');
   grunt.loadNpmTasks('grunt-gh-pages');
 
-  grunt.registerTask('schedule_job', 'Scheduling job for deploy', function() {
+  grunt.registerTask('run_scheduled_job', 'Scheduling job for deploy', function(endDate) {
 
-    grunt.log.writeln("The scheduled job will be executed at ?? every day until the YYYY-MM-DD.");
     var done = this.async();
     var moment = require('moment');
-    console.log('Started: ' + moment().format('YYYY-MM-DD HH:mm:ss'));
 
-    var exec = require('child_process').exec
-    var path = require('path')
-    var running = false
+    var cronJob = require('cron').CronJob
+      , exec = require('child_process').exec
+      , path = require('path')
+      , running = false
+      ;
 
     var run = function(what) {
-      if (running === true) return
-      running = true
-      console.log('Running deploy...');
-      // by default, just run grunt
-      what = what || 'grunt'
-      exec(what, function(err, stdout, stderr) {
-        if (err || stderr) { /* log the error somewhere */ }
-        /* log the stdout if needed*/
-        console.log(stdout)
-        running = false
-      })
-    }
+      if (running === true) {
+        return;
+      }
+      running = true;
 
-    setInterval(function() {
-      run('grunt deploy')
-    }, 60 * 1000) // once a day
+      // by default, just run grunt
+      what = what || 'grunt';
+
+      exec(what, function(err, stdout, stderr) {
+        if (err || stderr) {
+          console.log(err);
+        }
+        /* log the stdout if needed*/
+        console.log(stdout);
+        console.log('Completed deploy ' + moment().format('YYYY-MM-DD HH:mm'));
+        running = false;
+        done(true);
+      });
+    };
+
+    new cronJob('00 10 16 * * *', function(){
+        console.log('Starting deploy ' + new Date());
+        var what = 'grunt antdeploy';
+        run(what);
+    }, null, true);
+
+    // var done = this.async();
+
+    // if (arguments.length === 0) {
+    //   grunt.log.writeln("Please, add the endDate argument");
+    //   done(true);
+    // }
+    // else {
+    //   console.log("The scheduled job will be executed every day until " + endDate);
+    // }
+
+    // var moment = require('moment');
+    // var exec = require('child_process').exec;
+    // var running = false;
+
+    // var run = function(what) {
+    //   if (running === true) return;
+    //   var now = moment().format('YYYY-MM-DD');
+    //   running = true;
+    //   console.log('Running deploy at ' + moment().format('YYYY-MM-DD HH:mm'));
+    //   // by default, just run grunt
+    //   what = what || 'grunt';
+    //   exec(what, function(err, stdout, stderr) {
+    //     if (err || stderr) {
+    //       console.log(err);
+    //       console.log(stderr);
+    //     }
+    //     console.log(stdout);
+    //     running = false;
+    //     if(now == endDate) {
+    //       console.log('Deploy completed.');
+    //       done(true);
+    //     }
+    //   })
+    // }
+
+    // setInterval(function() {
+    //   run('grunt antdeploy')
+    // }, 1 * 60 * 60 * 1000); // once a day
 
   });
 
