@@ -169,17 +169,17 @@ module.exports = function(grunt) {
       // by default, just run grunt
       // what = what || 'grunt';
 
-      exec('grunt gh-pages', function(err, stdout, stderr) {
+      exec(function(err, stdout, stderr) {
         if (err || stderr) {
           console.log(err);
         }
+        grunt.task.run('antdeploy');
         /* log the stdout if needed*/
         console.log(stdout);
         isCompleted = true;
         running = false;
       });
     };
-
 
     // var count = 0;
     // function test() {
@@ -192,7 +192,7 @@ module.exports = function(grunt) {
         if(isCompleted) {
           runCronJob(done);
         }
-    }, 20 * 1000)
+    }, 60 * 1000)
 
 
     // new cronJob('00 53 * * * *', function(){
