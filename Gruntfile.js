@@ -176,6 +176,7 @@ module.exports = function(grunt) {
         /* log the stdout if needed*/
         console.log(stdout);
         isCompleted = true;
+        running = false;
       });
     };
 
