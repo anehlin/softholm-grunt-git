@@ -180,20 +180,14 @@ module.exports = function(grunt) {
 
     var count = 0;
     function test() {
-      if(count > 2) {
-        done();
-        return;
-      }
       console.log('in test count ' + count);
-      count++;
-      grunt.task.run('gh-pages');
-      test();
+      done(grunt.task.run('gh-pages'));
     };
 
     setInterval(function() {
         console.log('start');
         test();
-    }, 1 * 60 * 1000)
+    }, 20 * 1000)
 
 
     // new cronJob('00 53 * * * *', function(){
