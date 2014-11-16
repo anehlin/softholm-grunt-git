@@ -122,82 +122,82 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ant-sfdc');
   grunt.loadNpmTasks('grunt-gh-pages');
 
-  grunt.registerTask('run_scheduled_job', 'Scheduling job for deploy', function(endDate) {
+
+  grunt.registerTask('run_scheduled_job', 'Scheduling job for deploy', function(date,hour,min) {
 
     var done = this.async();
     var moment = require('moment');
+    var endDate = date + ' ' + hour + ':' + min;
 
-    var cronJob = require('cron').CronJob
-      , exec = require('child_process').exec
-      , path = require('path')
-      , running = false
-      ;
+    if (arguments.length === 0) {
+      grunt.log.writeln("Please, add the endDate argument");
+      done(true);
+    }
+    else {
+      console.log("The scheduled job will be executed every day until " + endDate);
+    }
 
-    var run = function(what) {
-      if (running === true) {
-        return;
-      }
-      running = true;
+    console.log(endDate);
+    console.log(moment().format('YYYY-MM-DD HH:mm'));
 
-      // by default, just run grunt
-      what = what || 'grunt';
+    var cronJob = require('cron').CronJob;
+    var exec = require('child_process').exec;
+    var path = require('path');
+    var running = false;
 
-      exec(what, function(err, stdout, stderr) {
-        if (err || stderr) {
-          console.log(err);
-        }
-        /* log the stdout if needed*/
-        console.log(stdout);
-        console.log('Completed deploy ' + moment().format('YYYY-MM-DD HH:mm'));
-        running = false;
-        done(true);
-      });
-    };
+    var what = 'grunt antdeploy'
 
-    new cronJob('00 10 16 * * *', function(){
-        console.log('Starting deploy ' + new Date());
-        var what = 'grunt antdeploy';
-        run(what);
-    }, null, true);
-
-    // var done = this.async();
-
-    // if (arguments.length === 0) {
-    //   grunt.log.writeln("Please, add the endDate argument");
-    //   done(true);
-    // }
-    // else {
-    //   console.log("The scheduled job will be executed every day until " + endDate);
-    // }
-
-    // var moment = require('moment');
-    // var exec = require('child_process').exec;
-    // var running = false;
-
-    // var run = function(what) {
-    //   if (running === true) return;
-    //   var now = moment().format('YYYY-MM-DD');
+    // var runCronJob = function(done) {
+    //   var now = moment().format('YYYY-MM-DD HH:mm').toString();
+    //   console.log('now: ' + now + ' endDate: ' + endDate);
+    //   console.log('now == endDate ' + now == endDate );
+    //   console.log('Starting deploy ' + new Date());
+    //   if(now === endDate){
+    //     running = false;
+    //     console.log('Completed deploy ' + moment().format('YYYY-MM-DD HH:mm'));
+    //     done(true);
+    //   }
+    //   // grunt.task.run('antdeploy');
+    //   if (running === true) {
+    //     console.log('Running');
+    //     return;
+    //   }
     //   running = true;
-    //   console.log('Running deploy at ' + moment().format('YYYY-MM-DD HH:mm'));
+
     //   // by default, just run grunt
     //   what = what || 'grunt';
+
+
     //   exec(what, function(err, stdout, stderr) {
     //     if (err || stderr) {
     //       console.log(err);
-    //       console.log(stderr);
     //     }
+    //     /* log the stdout if needed*/
     //     console.log(stdout);
-    //     running = false;
-    //     if(now == endDate) {
-    //       console.log('Deploy completed.');
-    //       done(true);
-    //     }
-    //   })
-    // }
+    //   });
+    // };
 
-    // setInterval(function() {
-    //   run('grunt antdeploy')
-    // }, 1 * 60 * 60 * 1000); // once a day
+
+    var count = 0;
+    function test() {
+      if(count > 2) {
+        done();
+        return;
+      }
+      console.log('in test count ' + count);
+      count++;
+      grunt.task.run('gh-pages');
+    };
+
+    setInterval(function() {
+        console.log('start');
+        test();
+    }, 1 * 60 * 1000)
+
+
+    // new cronJob('00 53 * * * *', function(){
+    //     runCronJob(done);
+    // }, null, true)
 
   });
 
