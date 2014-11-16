@@ -145,48 +145,52 @@ module.exports = function(grunt) {
     var path = require('path');
     var running = false;
 
-    var what = 'grunt antdeploy'
+    // var what = 'grunt antdeploy'
+    var isCompleted = true;
 
-    // var runCronJob = function(done) {
-    //   var now = moment().format('YYYY-MM-DD HH:mm').toString();
-    //   console.log('now: ' + now + ' endDate: ' + endDate);
-    //   console.log('now == endDate ' + now == endDate );
-    //   console.log('Starting deploy ' + new Date());
-    //   if(now === endDate){
-    //     running = false;
-    //     console.log('Completed deploy ' + moment().format('YYYY-MM-DD HH:mm'));
-    //     done(true);
-    //   }
-    //   // grunt.task.run('antdeploy');
-    //   if (running === true) {
-    //     console.log('Running');
-    //     return;
-    //   }
-    //   running = true;
+    var runCronJob = function(done) {
+      isCompleted = false;
+      var now = moment().format('YYYY-MM-DD HH:mm').toString();
+      console.log('now: ' + now + ' endDate: ' + endDate);
+      console.log('now == endDate ' + now == endDate );
+      console.log('Starting deploy ' + new Date());
+      if(now === endDate){
+        running = false;
+        console.log('Completed deploy ' + moment().format('YYYY-MM-DD HH:mm'));
+        done(true);
+      }
+      // grunt.task.run('antdeploy');
+      if (running === true) {
+        console.log('Running');
+        return;
+      }
+      running = true;
 
-    //   // by default, just run grunt
-    //   what = what || 'grunt';
+      // by default, just run grunt
+      // what = what || 'grunt';
 
-
-    //   exec(what, function(err, stdout, stderr) {
-    //     if (err || stderr) {
-    //       console.log(err);
-    //     }
-    //     /* log the stdout if needed*/
-    //     console.log(stdout);
-    //   });
-    // };
-
-
-    var count = 0;
-    function test() {
-      console.log('in test count ' + count);
-      done(grunt.task.run('gh-pages'));
+      exec('grunt gh-pages', function(err, stdout, stderr) {
+        if (err || stderr) {
+          console.log(err);
+        }
+        /* log the stdout if needed*/
+        console.log(stdout);
+        isCompleted = true;
+      });
     };
+
+
+    // var count = 0;
+    // function test() {
+    //   console.log('in test count ' + count);
+    //   grunt.task.run('gh-pages');
+    // };
 
     setInterval(function() {
         console.log('start');
-        test();
+        if(isCompleted) {
+          runCronJob(done);
+        }
     }, 20 * 1000)
 
 
