@@ -187,6 +187,7 @@ module.exports = function(grunt) {
       console.log('in test count ' + count);
       count++;
       grunt.task.run('gh-pages');
+      test();
     };
 
     setInterval(function() {
